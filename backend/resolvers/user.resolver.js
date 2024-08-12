@@ -26,51 +26,58 @@ const userResolver = {
   Mutation: {
     signUp: async (_, { input }, context) => {
       try {
-        const { username, password, name, gender } = input;
-        if (!username || !password || !name || !gender) {
+        const { username, name, password, gender } = input;
+
+        if (!username || !name || !password || !gender) {
           throw new Error('All fields are required');
         }
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-          throw new Error('User already exist');
+          throw new Error('User already exists');
         }
+
         const salt = await bcrypt.genSalt(10);
-        const hashedPass = await bcrypt.hash(password, salt);
-        const boysProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
-        const girlsProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
+        const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
+
         const newUser = new User({
           username,
           name,
-          password: hashedPass,
+          password: hashedPassword,
           gender,
-          profilePicture: gender === 'male' ? boysProfilePic : girlsProfilePic,
+          profilePicture: gender === 'male' ? boyProfilePic : girlProfilePic,
         });
+
         await newUser.save();
         await context.login(newUser);
         return newUser;
-      } catch (error) {
-        console.log('Error in creating user', error);
-        throw new Error(error.message || 'something went wrong');
+      } catch (err) {
+        console.error('Error in signUp: ', err);
+        throw new Error(err.message || 'Internal server error');
       }
     },
     login: async (_, { input }, context) => {
       try {
         const { username, password } = input;
-        const user = await context.authenticate('graphql-local', { username, password });
+        if (!username || !password) throw new Error('All fields are required');
+        const { user } = await context.authenticate('graphql-local', { username, password });
+
         await context.login(user);
         return user;
-      } catch (error) {
-        console.log('Error in creating user', error);
-        throw new Error(error.message || 'something went wrong');
+      } catch (err) {
+        console.error('Error in login:', err);
+        throw new Error(err.message || 'Internal server error');
       }
     },
     logout: async (_, __, context) => {
       try {
         await context.logout();
-        req.session.destroy((err) => {
+        context.req.session.destroy((err) => {
           if (err) throw new Error('something went wrong');
         });
-        res.clearCookie('connect.sid');
+        context.res.clearCookie('connect.sid');
         return { message: 'logged out successfully' };
       } catch (error) {
         console.log('Error in creating user', error);

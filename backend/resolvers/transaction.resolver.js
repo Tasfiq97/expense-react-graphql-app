@@ -17,7 +17,7 @@ const transactionResolver = {
     },
     transaction: async (_, { transactionId }) => {
       try {
-        const transaction = await Transaction.findByIdy(transactionId);
+        const transaction = await Transaction.findById(transactionId);
         return transaction;
       } catch (error) {
         throw new Error('Error getting transactions');
