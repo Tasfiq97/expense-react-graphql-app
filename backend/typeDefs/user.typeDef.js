@@ -4,15 +4,15 @@ type User{
     username:String!
     name: String!
     password:String!
-    profilePic:String
+    profilePicture:String
     gender:String!
+    transactions:[Transaction!]
 }
 
-type Query{
- 
-    authUser:User
-    user(userId:ID!):User
-}
+type Query {
+    authUser: User
+    user(userId:ID!): User
+  }
 
 type Mutation {
     signUp(input: SignUpInput!): User

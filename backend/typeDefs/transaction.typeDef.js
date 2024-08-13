@@ -8,18 +8,24 @@ type Transaction{
     amount:Float!
     location:String!
     date:String! 
+    user:User!
 
   
 }
 type Query {
     transactions: [Transaction!]
     transaction(transactionId:ID!): Transaction
-    # categoryStatistics: [CategoryStatistics!]
+    categoryStatistics: [CategoryStatistics!]
   }
 type Mutation {
     createTransaction(input: CreateTransactionInput!): Transaction!
     updateTransaction(input: UpdateTransactionInput!): Transaction!
     deleteTransaction(transactionId:ID!): Transaction!
+  }
+
+  type CategoryStatistics{
+    category:String!
+    totalAmount:Float!
   }
 input CreateTransactionInput{
     description: String!
