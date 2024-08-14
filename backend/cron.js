@@ -2,7 +2,7 @@ import cron from 'cron';
 import https from 'https';
 const URL = 'https://expense-react-graphql-app.onrender.com';
 
-const job = new cron.CronJob('*/10 * * * *', function () {
+const job = new cron.CronJob('*/14 * * * *', function () {
   https
     .get(URL, (res) => {
       if (res.statusCode === 200) {
