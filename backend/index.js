@@ -14,9 +14,14 @@ import passport from 'passport';
 import { buildContext } from 'graphql-passport';
 import { configurePassport } from './passport/passport.config.js';
 import path from 'path';
+import job from './cron.js';
 
 dotenv.config();
 configurePassport();
+job.start();
+
+
+
 const __dirname = path.resolve();
 const app = express();
 const httpServer = http.createServer(app);
@@ -70,7 +75,7 @@ app.use(
     context: async ({ req, res }) => buildContext({ req, res }),
   })
 );
- //nom run build to build frontend
+//nom run build to build frontend
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
 
 app.get('*', (req, res) => {
